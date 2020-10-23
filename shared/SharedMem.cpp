@@ -1,10 +1,12 @@
+//Import Statements
 #include <sys/shm.h>
-#include <errno.h>
 #include <string>
-#include "SharedMem.h"
-#include "Exception.h"
+#include <errno.h>
 #include "TimeType.h"
+#include "Exception.h"
+#include "SharedMem.h"
 
+//Namespace acting weird, just won't use it. Will create functions differently.
 
 SharedMem::SharedMem()
 {
@@ -27,12 +29,12 @@ SharedMem::SharedMem(bool childProc)
 void SharedMem::setupSharedMem()
 {
         key_t key;
-        const int share_size = sizeof(int) + sizeof(long);
+        const int size = sizeof(int) + sizeof(long);
         int *sharedMem;
 
         if((key = ftok(".", 1)) == (key_t) -1) throw Exception("There was an error setting the shared memory key:" + std::to_string(errno));
 
-        segmentId = shmget(key, share_size, 0777 | IPC_CREAT);
+        segmentId = shmget(key, size, 0777 | IPC_CREAT);
 
         if(segmentId < 0) throw Exception("There was an error getting the shared memory segment.");
 
@@ -50,26 +52,6 @@ void SharedMem::setClock(int s, int n)
 
         *seconds = s;
         *nanoSeconds = n;
-}
-
-int SharedMem::getSeconds()
-{
-        int s;
-        s = *seconds;
-        return s;
-}
-
-long SharedMem::getNanoSeconds()
-{
-        int n;
-        n = *nanoSeconds;
-        return n;
-}
-
-TimeType SharedMem::getTime()
-{
-        TimeType time(getSeconds(), getNanoSeconds());
-        return time;
 }
 
 void SharedMem::increment()
@@ -105,4 +87,26 @@ void SharedMem::close()
         shmdt(sharedInt);
 
         shmctl(segmentId, IPC_RMID, NULL);
+}
+
+//Functions to return a certain var
+
+int SharedMem::getSeconds()
+{
+        int s;
+        s = *seconds;
+        return s;
+}
+
+long SharedMem::getNanoSeconds()
+{
+        int n;
+        n = *nanoSeconds;
+        return n;
+}
+
+TimeType SharedMem::getTime()
+{
+        TimeType time(getSeconds(), getNanoSeconds());
+        return time;
 }

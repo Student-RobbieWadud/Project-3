@@ -1,15 +1,17 @@
-#include <cstdlib>
+//Import Statements
 #include <unistd.h>
-#include <string>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
-#include "SharedMem.h"
+#include <string>
 #include "TimeType.h"
 #include "MessageHandler.h"
+#include "SharedMem.h"
 
 using namespace std;
 
-int generateWaitTime();
+//Function Declarations
+int getTime();
 TimeType criticalSection(SharedMem);
 
 int main(int argc, char** argv)
@@ -27,26 +29,26 @@ int main(int argc, char** argv)
         return 0;
 }
 
-int generateWaitTime()
+//Function to get the time.
+int getTime()
 {
-        int low_num = 1;
-        int high_num = 100000;
+        int high = 100000, low = 1;
 
         srand(time(NULL) + getpid());
 
-        return ((rand() % (high_num - low_num)) + low_num);
+        return ((rand() % (high - low)) + low);
 }
 
+//Function to calculate what should be in the critical section.
 TimeType criticalSection(SharedMem clock)
 {
-        TimeType wait_time(0, generateWaitTime());
-        TimeType current_time = clock.getTime();
-        TimeType end_time = current_time + wait_time;
+        TimeType wait_time(0, getTime());
+        TimeType now = clock.getTime(), endTime = now + wait_time;
 
         do
         {
-                current_time = clock.getTime();
-        } while(current_time < end_time);
+                now = clock.getTime();
+        } while(now < endTime);
 
-        return end_time;
+        return endTime;
 }

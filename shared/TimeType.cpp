@@ -1,4 +1,8 @@
+//Import Statement
 #include "TimeType.h"
+
+//Namespace acting weird, just won't use it. Will create functions differently.
+
 
 TimeType::TimeType()
 {

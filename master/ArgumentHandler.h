@@ -12,10 +12,10 @@ public:
         std::string getFilename();
         int getTerminationTime();
 private:
-        bool help_flag;
-        int num_child_procs;
+        bool flag;
+        int childProcesses;
         std::string filename;
-        int term_time;
+        int termination;
 };
 
 #endif /* ARGUMENTHANDLER_H */

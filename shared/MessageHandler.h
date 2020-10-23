@@ -1,8 +1,9 @@
 #ifndef MESSAGEHANDLER_H
 #define MESSAGEHANDLER_H
 
-#include "TimeType.h"
+//Import Statements
 #include <sys/msg.h>
+#include "TimeType.h"
 
 typedef struct msgbuff
 {

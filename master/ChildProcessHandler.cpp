@@ -1,19 +1,23 @@
-#include <string>
+//Import Statements
 #include <unistd.h>
 #include <iostream>
+#include <string>
 #include <vector>
-#include "Exception.h"
 #include "ChildProcessHandler.h"
+#include "Exception.h"
 
-ChildProcessHandler::ChildProcessHandler(int num_c)
+//Namespace acting weird, just won't use it. Will create functions differently.
+
+
+ChildProcessHandler::ChildProcessHandler(int numberOfChildren)
 {
-        num_children = num_c;
-        exec_counter = 0;
+        children = numberOfChildren;
+        exeCounter = 0;
 }
 
 void ChildProcessHandler::startChildProcesses()
 {
-        for(int i = 0; i < num_children; i++)
+        for(int counter = 0; counter < children; counter++)
         {
                 startNewChild();
         }
@@ -21,26 +25,21 @@ void ChildProcessHandler::startChildProcesses()
 
 void ChildProcessHandler::startNewChild()
 {
-        int pid;
-        pid = fork();
+        int pid = fork();
 
         if(pid == 0)
         {
-                execl(
-                        "child",
-                        "child",
-                        NULL
-                        );
-                throw Exception("Error starting child process");
+                execl("child", "child", NULL);
+                throw Exception("There was an error starting the child process.");
         }
 
         pids.push_back(pid);
-        exec_counter++;
+        exeCounter++;
 }
 
 void ChildProcessHandler::startChildIfNeeded()
 {
-        while(pids.size() < num_children && exec_counter < 100)
+        while(pids.size() < children && exeCounter < 100)
         {
                 startNewChild();
         }
@@ -48,15 +47,25 @@ void ChildProcessHandler::startChildIfNeeded()
 
 void ChildProcessHandler::removeTerminatedChild(int pid)
 {
-        for(int i = 0; i < pids.size(); i++)
+        for(int counter = 0; counter < pids.size(); counter++)
         {
-                if(pids[i] == pid)
+                if(pids[counter] == pid)
                 {
-                        pids.erase(pids.begin() + i);
+                        pids.erase(pids.begin() + counter);
                         break;
                 }
         }
 }
+
+void ChildProcessHandler::printPids()
+{
+        for(int counter = 0; counter < pids.size(); counter++)
+        {
+                std::cout << pids[counter] << std::endl;
+        }
+}
+
+//Functions to return certain vars
 
 int ChildProcessHandler::numRunningChildren()
 {
@@ -66,12 +75,4 @@ int ChildProcessHandler::numRunningChildren()
 std::vector<int> ChildProcessHandler::getPids()
 {
         return pids;
-}
-
-void ChildProcessHandler::printPids()
-{
-        for(int i = 0; i < pids.size(); i++)
-        {
-                std::cout << pids[i] << std::endl;
-        }
 }

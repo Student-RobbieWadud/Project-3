@@ -1,7 +1,9 @@
+//Import Statements
 #include <iostream>
 #include <iomanip>
 #include "HelpDisplay.h"
 
+//Display the help menu
 bool HelpDisplay::print(bool arg_set)
 {
         if(!arg_set) return false;

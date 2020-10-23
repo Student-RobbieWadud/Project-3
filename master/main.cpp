@@ -1,18 +1,20 @@
-#include <cstdlib>
+//Import Statements
 #include <iostream>
-#include <fstream>
+#include <cstdlib>
 #include <sys/wait.h>
-#include "Exception.h"
-#include "ArgumentHandler.h"
-#include "HelpDisplay.h"
-#include "ChildProcessHandler.h"
-#include "SharedMem.h"
-#include "MessageHandler.h"
+#include <fstream>
 #include "TimeType.h"
+#include "Exception.h"
+#include "SharedMem.h"
+#include "ArgumentHandler.h"
+#include "ChildProcessHandler.h"
+#include "MessageHandler.h"
+#include "HelpDisplay.h"
 
 using namespace std;
 
-void record_message(string, TimeType, TimeType *);
+//Function Declaration
+void getMessage(string, TimeType, TimeType *);
 
 int main(int argc, char** argv)
 {
@@ -20,11 +22,14 @@ int main(int argc, char** argv)
         {
                 ArgumentHandler args (argc, argv);
 
-                if(HelpDisplay::print(args.getHelpFlag())) return 0;
+                if(HelpDisplay::print(args.getHelpFlag()))
+                {
+                        return 0;
+                }
 
                 ChildProcessHandler processes (args.getNumChildProcs());
-                MessageHandler message;
                 SharedMem clock;
+                MessageHandler message;
 
                 processes.startChildProcesses();
 
@@ -33,13 +38,16 @@ int main(int argc, char** argv)
 
                 while(processes.numRunningChildren() > 0)
                 {
-                        if(!lock) lock = message.grantCriticalSection();
+                        if(!lock)
+                        {
+                                lock = message.grantCriticalSection();
+                        }
 
                         TimeType *t = message.checkMessages();
 
                         if(t != NULL)
                         {
-                                record_message(args.getFilename(), clock.getTime(), t);
+                                getMessage(args.getFilename(), clock.getTime(), t);
                                 lock = false;
                         }
 
@@ -68,10 +76,12 @@ int main(int argc, char** argv)
         return 0;
 }
 
-void record_message(string filename, TimeType current_time, TimeType *time)
+//Function to get the message
+void getMessage(string filename, TimeType now, TimeType *time)
 {
         ofstream file;
         file.open(filename, ios::out | ios::app);
-        file << "Master: Child " << time->pid << " is terminating at time " << current_time.seconds << "." << current_time.nanoSeconds << " because it reached " << time->seconds << "." << time->nanoSeconds << " in slave" << endl;
+        file << "Master: Child " << time->pid << " is terminating at time " << now.seconds << "." << now.nanoSeconds << " because it reached " << endl;
+        time->seconds << "." << time->nanoSeconds << " in slave" << endl;
         file.close();
 }

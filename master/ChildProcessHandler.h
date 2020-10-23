@@ -1,6 +1,7 @@
 #ifndef CHILDPROCESSHANDLER_H
 #define CHILDPROCESSHANDLER_H
 
+//Import Statement
 #include <vector>
 
 class ChildProcessHandler
@@ -17,8 +18,7 @@ public:
         int numRunningChildren();
         void printPids();
 private:
-        int num_children;
-        int exec_counter;
+        int children, exeCounter;
         std::vector<int> pids;
 };
 

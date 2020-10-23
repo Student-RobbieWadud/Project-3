@@ -1,32 +1,37 @@
-#include <string>
-#include <cstdlib>
+//Import Statements
 #include <unistd.h>
-#include "ArgumentHandler.h"
+#include <cstdlib>
+#include <string>
 #include "Exception.h"
+#include "ArgumentHandler.h"
+
+//Namespace acting weird, just won't use it. Will create functions differently.
 
 ArgumentHandler::ArgumentHandler(int argc, char** argv)
 {
-        help_flag = false;
-        num_child_procs = 5;
+        //Creating the vars
+        termination = 20;
+        childProcesses = 5;
+        flag = false;
         filename = "test.out";
-        term_time = 20;
 
-        int c;
+        int userChar;
         opterr = 0;
         std::string opt;
         std::string str;
 
-        while((c = getopt(argc, argv, "hs:l:t")) != -1)
+        //While loop for the options menu
+        while((userChar = getopt(argc, argv, "hs:l:t")) != -1)
         {
-                switch(c)
+                switch(userChar)
                 {
                         case 'h':
-                                help_flag = true;
+                                flag = true;
                                 break;
 
                         case 's':
                                 str = optarg;
-                                num_child_procs = atoi(str.c_str());
+                                childProcesses = atoi(str.c_str());
                                 break;
 
                         case 'l':
@@ -35,7 +40,7 @@ ArgumentHandler::ArgumentHandler(int argc, char** argv)
 
                         case 't':
                                 str = optarg;
-                                term_time = atoi(str.c_str());
+                                termination = atoi(str.c_str());
                                 break;
 
                         case '?':
@@ -48,29 +53,32 @@ ArgumentHandler::ArgumentHandler(int argc, char** argv)
                                         throw Exception("Unknown option '" + opt + "'");
 
                                 else
-                                        throw Exception("Unknown option error.");
+                                        throw Exception("There has been an unknown option error.");
                                 break;
 
                         default:
-                                throw Exception("Unknown error");
+                                throw Exception("This is an unknown error.");
                                 break;
                 }
         }
 
-        for(int i = optind; i < argc; i++)
+        //In case there are too many arguments...
+        for(int counter = optind; counter < argc; counter++)
         {
-                throw Exception("Too many arguments");
+                throw Exception("You have typed in too many arguments.");
         }
 }
 
+//Functions to return certain vars
+
 bool ArgumentHandler::getHelpFlag()
 {
-        return help_flag;
+        return flag;
 }
 
 int ArgumentHandler::getNumChildProcs()
 {
-        return num_child_procs;
+        return childProcesses;
 }
 
 std::string ArgumentHandler::getFilename()
@@ -80,5 +88,5 @@ std::string ArgumentHandler::getFilename()
 
 int ArgumentHandler::getTerminationTime()
 {
-        return term_time;
+        return termination;
 }
